@@ -25,39 +25,58 @@ public final class ComboStick extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(this, this);
     }
 
+    //Event handler for player interact event
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
+        //Get the player who interacted
         Player player = event.getPlayer();
+        //Get the item the player interacted with
         ItemStack item = event.getItem();
+        //Get the hand the player interacted with
         EquipmentSlot hand = event.getHand();
 
+        //Get the order of clicks for the current player
+        String order = playerOrder.getOrDefault(player.getName(), "");
+
+        //Check if the item is not a stick, return if it is not
         if (!item.getType().equals(Material.STICK)) {
             return;
         }
 
+        //Check if the player interacted with their off hand, return if they did
         if (hand.equals(EquipmentSlot.OFF_HAND)) {
             return;
         }
 
-        String order = playerOrder.getOrDefault(player.getName(), "");
+        //Check if the order is empty and the player performed a left-click, return if they did
+        if (order.isEmpty() && event.getAction().name().contains("LEFT")) {
+            return;
+        }
+
+        //If the player performed a right-click
         if (event.getAction().name().contains("RIGHT")) {
+            //Append R to the order
             order += "R";
-            ChatColor ActionBarTextColor = ChatColor.DARK_GRAY;
+            //Send the order as a message in the action bar
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(order));
 
-
+            //If the player performed a left-click
         } else if (event.getAction().name().contains("LEFT")) {
+            //Append L to the order
             order += "L";
-            ChatColor ActionBarTextColor = ChatColor.DARK_GRAY;
+            //Send the order as a message in the action bar
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(order));
         }
 
+        //Save the updated order for the current player
         playerOrder.put(player.getName(), order);
 
+        //Check if the order is less than 3 clicks, return if it is
         if (order.length() < 3) {
             return;
         }
 
+        //Check the order and send appropriate message to the player
         switch (order) {
             case "RLL":
                 player.sendMessage(ChatColor.AQUA + "You have clicked the stick in the order RLL.");
@@ -76,6 +95,7 @@ public final class ComboStick extends JavaPlugin implements Listener {
                 break;
         }
 
+        //Remove the order for the current player
         playerOrder.remove(player.getName());
     }
 }
