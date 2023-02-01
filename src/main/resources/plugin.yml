@@ -1,0 +1,4 @@
+name: ComboStick
+version: '${project.version}'
+main: me.lownzy.combostick.combostick.ComboStick
+api-version: 1.19
